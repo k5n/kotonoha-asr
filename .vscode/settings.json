@@ -1,0 +1,133 @@
+{
+  "svelte.enable-ts-plugin": true,
+  "eslint.validate": ["svelte"],
+  "editor.formatOnSave": true,
+  "[typescript][javascript][json][jsonc][svelte]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "always"
+    },
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "always"
+    },
+    "editor.unicodeHighlight.ambiguousCharacters": true,
+    "editor.unicodeHighlight.invisibleCharacters": true,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "on",
+      "other": "on"
+    }
+  },
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "files.readonlyInclude": {
+    "**/.cargo/registry/src/**/*.rs": true,
+    "**/.cargo/git/checkouts/**/*.rs": true,
+    "**/lib/rustlib/src/rust/library/**/*.rs": true
+  },
+  "cSpell.words": [
+    "appimage",
+    "APPLOCALDATA",
+    "AUTOINCREMENT",
+    "dotenvy",
+    "flac",
+    "flowbite",
+    "kotonoha",
+    "nsis",
+    "serde",
+    "tauri",
+    "usecases"
+  ],
+  "todohighlight.isCaseSensitive": true,
+  "todohighlight.include": [
+    "**/*.js",
+    "**/*.ts",
+    "**/*.html",
+    "**/*.rs",
+    "**/*.css",
+    "**/*.scss",
+    "**/*.svelte",
+    "**/*.json",
+    "**/*.md"
+  ],
+  "todohighlight.defaultStyle": {
+    "color": "#222",
+    "cursor": "pointer",
+    "border": "1px solid #eee",
+    "borderRadius": "4px",
+    "isWholeLine": true
+  },
+  "todohighlight.keywords": [
+    {
+      "text": "TODO:",
+      "before": {
+        "contentText": "✅"
+      },
+      "color": "#222",
+      "backgroundColor": "#ffaa00",
+      "overviewRulerColor": "#ffaa00"
+    },
+    {
+      "text": "FIXME:",
+      "before": {
+        "contentText": "🐛"
+      },
+      "color": "#fff",
+      "backgroundColor": "#ff33aa",
+      "overviewRulerColor": "#ff33aa"
+    },
+    {
+      "text": "XXX:",
+      "before": {
+        "contentText": "‼️"
+      },
+      "color": "#fff",
+      "backgroundColor": "#ff33aa",
+      "overviewRulerColor": "#ff33aa"
+    },
+    {
+      "text": "NOTE:",
+      "before": {
+        "contentText": "📝"
+      },
+      "color": "#fff",
+      "backgroundColor": "#0066ff",
+      "overviewRulerColor": "#0066ff",
+      "border": "0px",
+      "isWholeLine": false
+    },
+    {
+      "text": "HACK:",
+      "before": {
+        "contentText": "🧑‍💻"
+      },
+      "color": "#333",
+      "backgroundColor": "#00ff00",
+      "overviewRulerColor": "#00ff00"
+    },
+    {
+      "text": "DEBUG:",
+      "before": {
+        "contentText": "🔍"
+      },
+      "color": "#222",
+      "backgroundColor": "#ddeeff",
+      "overviewRulerColor": "#ddeeff",
+      "cursor": "pointer",
+      "border": "1px solid #eee",
+      "borderRadius": "4px"
+    }
+  ],
+  "todo-tree.general.tags": ["TODO:", "FIXME:", "XXX:", "HACK:", "DEBUG:"]
+}

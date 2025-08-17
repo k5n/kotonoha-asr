@@ -50,6 +50,7 @@
       status={asrStore.value.status}
       totalDurationMs={asrStore.value.totalDurationMs}
       onSave={handleSave}
+      onReset={handleReset}
     />
   {/if}
 </div>

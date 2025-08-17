@@ -12,6 +12,7 @@
     status,
     totalDurationMs,
     onSave,
+    onReset,
   }: {
     fileName: string;
     progress: number;
@@ -19,6 +20,7 @@
     status: Status;
     totalDurationMs: number;
     onSave: () => void;
+    onReset: () => void;
   } = $props();
 
   // --- Derived State ---
@@ -60,7 +62,8 @@
       placeholder="ここに文字起こし結果が表示されます..."
     />
 
-    <div class="text-center">
+    <div class="flex justify-center gap-4">
+      <Button color="light" disabled={status !== 'done'} onclick={onReset}>初期画面に戻る</Button>
       <Button color="blue" disabled={status !== 'done'} onclick={onSave}>ファイルとして保存</Button>
     </div>
   </div>

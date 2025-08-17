@@ -1,8 +1,6 @@
 import { asrStore } from '$lib/application/stores/asrStore.svelte';
-import {
-  asrRepository,
-  type AsrProgressPayload,
-} from '$lib/infrastructure/repositories/asrRepository';
+import type { AsrProgressPayload } from '$lib/domain/entities/asr';
+import { asrRepository } from '$lib/infrastructure/repositories/asrRepository';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 
 async function startProcessing(filePath: string): Promise<void> {

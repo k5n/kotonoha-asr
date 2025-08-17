@@ -15,6 +15,11 @@ graph LR
                     src_lib_application_usecases_modelSetup_ts["modelSetup.ts"]
                 end
             end
+            subgraph "domain"
+                subgraph "entities"
+                    src_lib_domain_entities_asr_ts["asr.ts"]
+                end
+            end
             subgraph "infrastructure"
                 subgraph "repositories"
                     src_lib_infrastructure_repositories_asrRepository_ts["asrRepository.ts"]
@@ -37,12 +42,14 @@ graph LR
             src_routes__layout_ts["+layout.ts"]
             src_routes__page_svelte["+page.svelte"]
         end
-src_lib_application_stores_asrStore_svelte_ts --> src_lib_infrastructure_repositories_asrRepository_ts
+src_lib_application_stores_asrStore_svelte_ts --> src_lib_domain_entities_asr_ts
 src_lib_application_usecases_asrUseCases_ts --> src_lib_application_stores_asrStore_svelte_ts
+src_lib_application_usecases_asrUseCases_ts --> src_lib_domain_entities_asr_ts
 src_lib_application_usecases_asrUseCases_ts --> src_lib_infrastructure_repositories_asrRepository_ts
 src_lib_application_usecases_modelSetup_ts --> src_lib_infrastructure_repositories_fileRepository_ts
 src_lib_application_usecases_modelSetup_ts --> src_lib_infrastructure_repositories_modelDownloadRepository_ts
-src_lib_presentation_components_ProcessingView_svelte --> src_lib_infrastructure_repositories_asrRepository_ts
+src_lib_infrastructure_repositories_asrRepository_ts --> src_lib_domain_entities_asr_ts
+src_lib_presentation_components_ProcessingView_svelte --> src_lib_domain_entities_asr_ts
 src_lib_presentation_components_ProcessingView_svelte --> src_lib_presentation_utils_time_ts
 src_routes__layout_svelte --> src_lib_application_stores_setupStore_svelte_ts
 src_routes__layout_ts --> src_lib_application_stores_setupStore_svelte_ts

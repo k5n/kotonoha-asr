@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { AsrProgressPayload } from '$lib/infrastructure/repositories/asrRepository';
+  import type { AsrProgressPayload } from '$lib/domain/entities/asr';
   import { formatTime } from '$lib/presentation/utils/time';
   import { Button, Progressbar, Textarea } from 'flowbite-svelte';
 

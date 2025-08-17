@@ -1,4 +1,4 @@
-import type { AsrProgressPayload } from '$lib/infrastructure/repositories/asrRepository';
+import type { AsrProgressPayload } from '$lib/domain/entities/asr';
 
 type Status = 'initial' | 'processing' | 'done' | 'error';
 

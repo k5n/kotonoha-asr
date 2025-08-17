@@ -1,16 +1,6 @@
+import type { AsrProgressPayload, AsrStartedPayload } from '$lib/domain/entities/asr';
 import { invoke } from '@tauri-apps/api/core';
 import { listen, type UnlistenFn } from '@tauri-apps/api/event';
-
-// --- Types ---
-export type AsrStartedPayload = {
-  totalDurationMs: number;
-};
-
-export type AsrProgressPayload = {
-  text: string;
-  startTimeMs: number;
-  endTimeMs: number;
-};
 
 // --- Repository ---
 async function startAsrProcess(filePath: string): Promise<void> {

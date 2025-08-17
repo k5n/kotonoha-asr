@@ -29,26 +29,27 @@
     >
   </header>
 
-  {#if asrStore.value.status === 'initial'}
+  {#if asrStore.status === 'initial'}
     <InitialView onFileSelected={handleFileSelected} />
-  {:else if asrStore.value.status === 'error'}
+  {:else if asrStore.status === 'error'}
     <div class="flex flex-col items-center gap-4">
       <Alert color="red" class="w-full">
         {#snippet icon()}
           <ExclamationCircleOutline class="h-5 w-5" />
         {/snippet}
         <span class="font-medium">エラーが発生しました:</span>
-        {asrStore.value.errorMessage}
+        {asrStore.errorMessage}
       </Alert>
       <Button onclick={handleReset}>最初の画面に戻る</Button>
     </div>
   {:else}
     <ProcessingView
-      fileName={asrStore.value.fileName}
-      progress={asrStore.value.progress}
-      transcriptionSegments={asrStore.value.transcriptionSegments}
-      status={asrStore.value.status}
-      totalDurationMs={asrStore.value.totalDurationMs}
+      fileName={asrStore.fileName}
+      progress={asrStore.progress}
+      transcriptionSegments={asrStore.transcriptionSegments}
+      status={asrStore.status}
+      totalDurationMs={asrStore.totalDurationMs}
+      processingTimeMs={asrStore.processingTimeMs}
       onSave={handleSave}
       onReset={handleReset}
     />

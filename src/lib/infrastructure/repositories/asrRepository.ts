@@ -1,4 +1,8 @@
-import type { AsrProgressPayload, AsrStartedPayload } from '$lib/domain/entities/asr';
+import type {
+  AsrFinishedPayload,
+  AsrProgressPayload,
+  AsrStartedPayload,
+} from '$lib/domain/entities/asr';
 import { invoke } from '@tauri-apps/api/core';
 import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 
@@ -15,8 +19,8 @@ async function onAsrProgress(callback: (payload: AsrProgressPayload) => void): P
   return await listen<AsrProgressPayload>('asr-progress', (event) => callback(event.payload));
 }
 
-async function onAsrFinished(callback: () => void): Promise<UnlistenFn> {
-  return await listen('asr-finished', callback);
+async function onAsrFinished(callback: (payload: AsrFinishedPayload) => void): Promise<UnlistenFn> {
+  return await listen<AsrFinishedPayload>('asr-finished', (event) => callback(event.payload));
 }
 
 async function onAsrError(callback: (payload: string) => void): Promise<UnlistenFn> {

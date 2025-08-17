@@ -7,3 +7,7 @@ export type AsrProgressPayload = {
   readonly startTimeMs: number;
   readonly endTimeMs: number;
 };
+
+export type AsrFinishedPayload = {
+  readonly processingTimeMs: number;
+};

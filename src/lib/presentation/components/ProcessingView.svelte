@@ -11,6 +11,7 @@
     transcriptionSegments,
     status,
     totalDurationMs,
+    processingTimeMs,
     onSave,
     onReset,
   }: {
@@ -19,12 +20,14 @@
     transcriptionSegments: AsrProgressPayload[];
     status: Status;
     totalDurationMs: number;
+    processingTimeMs: number;
     onSave: () => void;
     onReset: () => void;
   } = $props();
 
   // --- Derived State ---
   const formattedDuration = $derived(formatTime(totalDurationMs));
+  const formattedProcessingTime = $derived(formatTime(processingTimeMs));
   const formattedTranscription = $derived(
     transcriptionSegments
       .map((segment) => {
@@ -44,6 +47,9 @@
     </p>
     {#if totalDurationMs > 0}
       <p class="text-sm text-gray-500 dark:text-gray-400">全体時間: {formattedDuration}</p>
+    {/if}
+    {#if status === 'done' && processingTimeMs > 0}
+      <p class="text-sm text-gray-500 dark:text-gray-400">処理時間: {formattedProcessingTime}</p>
     {/if}
   </div>
 

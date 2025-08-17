@@ -1,5 +1,4 @@
 import { asrStore } from '$lib/application/stores/asrStore.svelte';
-import type { AsrProgressPayload } from '$lib/domain/entities/asr';
 import { asrRepository } from '$lib/infrastructure/repositories/asrRepository';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 
@@ -16,21 +15,15 @@ async function startProcessing(filePath: string): Promise<void> {
   };
 
   const unlistenStarted = await asrRepository.onAsrStarted((payload) => {
-    asrStore.setTotalDuration(payload.totalDurationMs);
+    asrStore.setStarted(payload.totalDurationMs);
   });
 
-  const unlistenProgress = await asrRepository.onAsrProgress((payload: AsrProgressPayload) => {
-    asrStore.addSegment(payload);
-
-    const totalDuration = asrStore.value.totalDurationMs;
-    if (totalDuration > 0) {
-      const progress = Math.round((payload.endTimeMs / totalDuration) * 100);
-      asrStore.updateProgress(progress);
-    }
+  const unlistenProgress = await asrRepository.onAsrProgress((payload) => {
+    asrStore.addProgress(payload);
   });
 
-  const unlistenFinished = await asrRepository.onAsrFinished(() => {
-    asrStore.finish();
+  const unlistenFinished = await asrRepository.onAsrFinished((payload) => {
+    asrStore.setFinished(payload.processingTimeMs);
     cleanup();
   });
 

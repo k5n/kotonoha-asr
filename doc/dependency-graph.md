@@ -44,7 +44,6 @@ graph LR
         end
 src_lib_application_stores_asrStore_svelte_ts --> src_lib_domain_entities_asr_ts
 src_lib_application_usecases_asrUseCases_ts --> src_lib_application_stores_asrStore_svelte_ts
-src_lib_application_usecases_asrUseCases_ts --> src_lib_domain_entities_asr_ts
 src_lib_application_usecases_asrUseCases_ts --> src_lib_infrastructure_repositories_asrRepository_ts
 src_lib_application_usecases_modelSetup_ts --> src_lib_infrastructure_repositories_fileRepository_ts
 src_lib_application_usecases_modelSetup_ts --> src_lib_infrastructure_repositories_modelDownloadRepository_ts

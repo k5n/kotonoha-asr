@@ -23,6 +23,12 @@ struct ProgressPayload {
     end_time_ms: u64,
 }
 
+#[derive(Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct FinishedPayload {
+    processing_time_ms: u64,
+}
+
 #[derive(Debug, Clone)]
 struct Sentence {
     start: f32,
@@ -352,8 +358,16 @@ pub fn start_asr_process(app_handle: AppHandle, file_path: String) {
             &app_handle,
         );
 
-        log::info!("Time taken for decode: {:?}", start_t.elapsed());
-        app_handle.emit("asr-finished", ()).unwrap();
+        let elapsed = start_t.elapsed();
+        log::info!("Time taken for decode: {:?}", elapsed);
+        app_handle
+            .emit(
+                "asr-finished",
+                FinishedPayload {
+                    processing_time_ms: elapsed.as_millis() as u64,
+                },
+            )
+            .unwrap();
         log::info!("ASR process finished for: {}", file_path);
     });
 }

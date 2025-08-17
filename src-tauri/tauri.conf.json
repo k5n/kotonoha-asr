@@ -34,7 +34,7 @@
       "icons/icon.ico"
     ],
     "copyright": "Copyright (C) 2025 Keigo Nakatani (https://github.com/k5n)",
-    "shortDescription": "Kotonoha-ASR transcribes audio files into text using advanced Automatic Speech Recognition (ASR) models.",
+    "shortDescription": "Kotonoha-ASR transcribes audio files into timestamped sentences using Automatic Speech Recognition (ASR) models.",
     "linux": {
       "appimage": {
         "bundleMediaFramework": true,

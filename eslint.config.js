@@ -48,6 +48,13 @@ export default tsEslint.config(
       },
     },
   },
+  {
+    // In Svelte 5, `let` is used for reactive state with runes, so we disable prefer-const for these files.
+    files: ['**/*.svelte.ts'],
+    rules: {
+      'prefer-const': 'off',
+    },
+  },
   // For configuration files used in Node.js environment
   // It's okay to use the .js extension instead of the .mjs extension。
   {

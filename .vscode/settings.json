@@ -47,6 +47,7 @@
     "nsis",
     "serde",
     "tauri",
+    "Unlisten",
     "usecases"
   ],
   "todohighlight.isCaseSensitive": true,

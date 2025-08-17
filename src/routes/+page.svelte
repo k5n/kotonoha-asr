@@ -2,23 +2,14 @@
   import InitialView from '$lib/presentation/components/InitialView.svelte';
   import ProcessingView from '$lib/presentation/components/ProcessingView.svelte';
   import { Heading, P } from 'flowbite-svelte';
-
-  // --- State ---
-  let status: 'initial' | 'processing' | 'done' = $state('initial');
-  let progress = $state(45);
-  let transcription = $state(
-    '本日はお集まりいただきありがとうございます。\n今回は新プロジェクトの進捗についてお話します。'
-  );
-  let fileName = $state('dummy_audio.mp3');
+  import { asrStore } from '$lib/application/stores/asrStore.svelte';
+  import { asrUseCases } from '$lib/application/usecases/asrUseCases';
 
   // --- Event Handlers ---
   function startProcessing(files: FileList) {
     if (!files || files.length === 0) return;
-
-    // TODO: ファイルが選択されたので、ここで処理を開始する
-    console.log('File selected:', files[0]);
-    fileName = files[0].name;
-    status = 'processing';
+    // The file name is used as a filePath in this stub implementation.
+    asrUseCases.startProcessing(files[0].name);
   }
 
   function handleSave() {
@@ -34,9 +25,16 @@
     >
   </header>
 
-  {#if status === 'initial'}
+  {#if asrStore.value.status === 'initial'}
     <InitialView onFileSelected={startProcessing} />
   {:else}
-    <ProcessingView {fileName} {progress} {transcription} {status} onSave={handleSave} />
+    <ProcessingView
+      fileName={asrStore.value.fileName}
+      progress={asrStore.value.progress}
+      transcriptionSegments={asrStore.value.transcriptionSegments}
+      status={asrStore.value.status}
+      totalDurationMs={asrStore.value.totalDurationMs}
+      onSave={handleSave}
+    />
   {/if}
 </div>

@@ -1,36 +1,67 @@
 <script lang="ts">
-  import { Button, Label, P, Progressbar, Textarea } from 'flowbite-svelte';
+  import { Button, Progressbar, Textarea } from 'flowbite-svelte';
+  import { formatTime } from '$lib/presentation/utils/time';
+  import type { AsrProgressPayload } from '$lib/infrastructure/repositories/asrRepository';
 
-  type Props = {
+  // --- Props ---
+  type Status = 'initial' | 'processing' | 'done';
+  let {
+    fileName,
+    progress,
+    transcriptionSegments,
+    status,
+    totalDurationMs,
+    onSave,
+  }: {
     fileName: string;
     progress: number;
-    transcription: string;
-    status: 'processing' | 'done';
+    transcriptionSegments: AsrProgressPayload[];
+    status: Status;
+    totalDurationMs: number;
     onSave: () => void;
-  };
-  let { fileName, progress, transcription, status, onSave }: Props = $props();
+  } = $props();
 
-  let progressMessage = `${progress}%`;
+  // --- Derived State ---
+  const formattedDuration = $derived(formatTime(totalDurationMs));
+  const formattedTranscription = $derived(
+    transcriptionSegments
+      .map((segment) => {
+        const { text, startTimeMs, endTimeMs } = segment;
+        return `[${formatTime(startTimeMs)} -> ${formatTime(endTimeMs)}] ${text}`;
+      })
+      .join('\n')
+  );
 </script>
 
-<div class="space-y-6">
-  <div>
-    <p class="text-2xl font-semibold">{fileName}</p>
-  </div>
-  <div>
-    <Progressbar {progress} />
-    <P class="mt-1 text-right text-sm text-gray-500 dark:text-gray-400">
-      {progressMessage}
-    </P>
-  </div>
-  <div>
-    <Label for="transcription-output" class="mb-2 block text-lg">文字起こし結果</Label>
-    <Textarea id="transcription-output" class="w-full" rows={10} readonly value={transcription} />
+<div class="flex w-full flex-col items-center">
+  <div
+    class="mb-4 w-full max-w-3xl rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800"
+  >
+    <p class="truncate text-lg font-semibold text-gray-900 dark:text-white">
+      {fileName}
+    </p>
+    {#if totalDurationMs > 0}
+      <p class="text-sm text-gray-500 dark:text-gray-400">全体時間: {formattedDuration}</p>
+    {/if}
   </div>
 
-  {#if status === 'done'}
-    <div class="pt-4 text-center">
-      <Button size="xl" onclick={onSave}>ファイル保存</Button>
+  <div class="w-full max-w-3xl">
+    <div class="mb-2 flex justify-between">
+      <span class="text-base font-medium text-blue-700 dark:text-white">進捗</span>
+      <span class="text-sm font-medium text-blue-700 dark:text-white">{progress}%</span>
     </div>
-  {/if}
+    <Progressbar {progress} class="mb-5 w-full" />
+
+    <Textarea
+      value={formattedTranscription}
+      readonly
+      rows={15}
+      class="mb-5 w-full"
+      placeholder="ここに文字起こし結果が表示されます..."
+    />
+
+    <div class="text-center">
+      <Button color="blue" disabled={status !== 'done'} onclick={onSave}>SRT形式で保存</Button>
+    </div>
+  </div>
 </div>

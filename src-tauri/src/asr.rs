@@ -1,4 +1,3 @@
-use sherpa_rs::read_audio_file;
 use sherpa_rs::transducer::{TransducerConfig, TransducerRecognizer};
 use std::thread;
 use std::time::Instant;
@@ -268,29 +267,20 @@ pub fn start_asr_process(app_handle: AppHandle, file_path: String) {
     thread::spawn(move || {
         let start_t = Instant::now();
 
-        let (samples, sample_rate) = match read_audio_file(&file_path) {
+        let samples = match crate::audio_converter::convert_to_mono_f32_16khz(&file_path) {
             Ok(data) => data,
             Err(e) => {
-                log::error!("Failed to read audio file: {}", e);
+                log::error!("Failed to read or convert audio file: {}", e);
                 app_handle
                     .emit(
                         "asr-error",
-                        format!("音声ファイルの読み込みに失敗しました: {}", e),
+                        format!("音声ファイルの読み込みまたは変換に失敗しました: {}", e),
                     )
                     .unwrap();
                 return;
             }
         };
-
-        if sample_rate != REQUIRED_SAMPLE_RATE {
-            let err_msg = format!(
-                "サンプルレートは {} である必要があります。",
-                REQUIRED_SAMPLE_RATE
-            );
-            log::error!("{}", err_msg);
-            app_handle.emit("asr-error", err_msg).unwrap();
-            return;
-        }
+        let sample_rate = REQUIRED_SAMPLE_RATE;
 
         let model_dir_path = match app_handle.path().resolve(
             "models/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8",

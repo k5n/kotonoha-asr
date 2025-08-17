@@ -1,4 +1,5 @@
 mod asr;
+mod audio_converter;
 
 use asr::start_asr_process;
 use tauri;

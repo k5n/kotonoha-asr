@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Fileupload, Label } from 'flowbite-svelte';
+  import { Fileupload } from 'flowbite-svelte';
   import { UploadOutline } from 'flowbite-svelte-icons';
 
   let { onFileSelected }: { onFileSelected: (files: FileList) => void } = $props();
@@ -21,10 +21,10 @@
   }
 </script>
 
-<Label
-  for="file-upload"
+<div
   class="flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600 {isDragover &&
     'border-primary-500 bg-primary-50 dark:bg-gray-800'}"
+  onclick={() => document.getElementById('file-upload')?.click()}
   ondragenter={() => (isDragover = true)}
   ondragover={(e) => {
     e.preventDefault();
@@ -35,6 +35,13 @@
     e.preventDefault();
     handleDrop(e);
   }}
+  role="button"
+  tabindex="0"
+  onkeydown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      document.getElementById('file-upload')?.click();
+    }
+  }}
 >
   <div class="flex flex-col items-center justify-center pt-5 pb-6">
     <UploadOutline class="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400" />
@@ -44,4 +51,4 @@
     <p class="text-xs text-gray-500 dark:text-gray-400">AUDIO (MP3, WAV, etc.)</p>
   </div>
   <Fileupload id="file-upload" class="hidden" onchange={handleFileChange} accept="audio/*" />
-</Label>
+</div>

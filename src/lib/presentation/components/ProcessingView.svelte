@@ -17,13 +17,15 @@
   }: {
     fileName: string;
     progress: number;
-    transcriptionSegments: AsrProgressPayload[];
+    transcriptionSegments: readonly AsrProgressPayload[];
     status: Status;
     totalDurationMs: number;
     processingTimeMs: number;
     onSave: () => void;
     onReset: () => void;
   } = $props();
+
+  let textareaElement: HTMLTextAreaElement | undefined = $state(undefined);
 
   // --- Derived State ---
   const formattedDuration = $derived(formatTime(totalDurationMs));
@@ -36,6 +38,15 @@
       })
       .join('\n')
   );
+
+  // Auto-scroll to the bottom of the textarea when new content is added
+  $effect(() => {
+    const _ = formattedTranscription; // Make formattedTranscription an explicit dependency
+
+    if (textareaElement) {
+      textareaElement.scrollTop = textareaElement.scrollHeight;
+    }
+  });
 </script>
 
 <div class="flex w-full flex-col items-center">
@@ -61,6 +72,7 @@
     <Progressbar {progress} class="mb-5 w-full" />
 
     <Textarea
+      bind:elementRef={textareaElement}
       value={formattedTranscription}
       readonly
       rows={15}

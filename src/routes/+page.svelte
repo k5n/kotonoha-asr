@@ -1,9 +1,10 @@
 <script lang="ts">
-  import InitialView from '$lib/presentation/components/InitialView.svelte';
-  import ProcessingView from '$lib/presentation/components/ProcessingView.svelte';
-  import { Heading, P } from 'flowbite-svelte';
   import { asrStore } from '$lib/application/stores/asrStore.svelte';
   import { asrUseCases } from '$lib/application/usecases/asrUseCases';
+  import InitialView from '$lib/presentation/components/InitialView.svelte';
+  import ProcessingView from '$lib/presentation/components/ProcessingView.svelte';
+  import { Alert, Button, Heading, P } from 'flowbite-svelte';
+  import { ExclamationCircleOutline } from 'flowbite-svelte-icons';
 
   // --- Event Handlers ---
   function handleFileSelected(filePath: string) {
@@ -13,6 +14,10 @@
 
   function handleSave() {
     // TODO: SRTファイルとして保存する処理を実装する
+  }
+
+  function handleReset() {
+    asrStore.reset();
   }
 </script>
 
@@ -26,6 +31,17 @@
 
   {#if asrStore.value.status === 'initial'}
     <InitialView onFileSelected={handleFileSelected} />
+  {:else if asrStore.value.status === 'error'}
+    <div class="flex flex-col items-center gap-4">
+      <Alert color="red" class="w-full">
+        {#snippet icon()}
+          <ExclamationCircleOutline class="h-5 w-5" />
+        {/snippet}
+        <span class="font-medium">エラーが発生しました:</span>
+        {asrStore.value.errorMessage}
+      </Alert>
+      <Button onclick={handleReset}>最初の画面に戻る</Button>
+    </div>
   {:else}
     <ProcessingView
       fileName={asrStore.value.fileName}

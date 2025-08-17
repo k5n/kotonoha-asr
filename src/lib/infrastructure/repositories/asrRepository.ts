@@ -29,9 +29,14 @@ async function onAsrFinished(callback: () => void): Promise<UnlistenFn> {
   return await listen('asr-finished', callback);
 }
 
+async function onAsrError(callback: (payload: string) => void): Promise<UnlistenFn> {
+  return await listen<string>('asr-error', (event) => callback(event.payload));
+}
+
 export const asrRepository = {
   startAsrProcess,
   onAsrStarted,
   onAsrProgress,
   onAsrFinished,
+  onAsrError,
 };

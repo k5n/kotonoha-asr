@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { Button, Progressbar, Textarea } from 'flowbite-svelte';
-  import { formatTime } from '$lib/presentation/utils/time';
   import type { AsrProgressPayload } from '$lib/infrastructure/repositories/asrRepository';
+  import { formatTime } from '$lib/presentation/utils/time';
+  import { Button, Progressbar, Textarea } from 'flowbite-svelte';
 
   // --- Props ---
   type Status = 'initial' | 'processing' | 'done';
@@ -61,7 +61,7 @@
     />
 
     <div class="text-center">
-      <Button color="blue" disabled={status !== 'done'} onclick={onSave}>SRT形式で保存</Button>
+      <Button color="blue" disabled={status !== 'done'} onclick={onSave}>ファイルとして保存</Button>
     </div>
   </div>
 </div>

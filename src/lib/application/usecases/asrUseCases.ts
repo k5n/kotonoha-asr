@@ -6,6 +6,8 @@ import {
 import type { UnlistenFn } from '@tauri-apps/api/event';
 
 async function startProcessing(filePath: string): Promise<void> {
+  // NOTE: `asrStore.start` でファイル名だけを渡したいが、
+  //       Tauri の FileDropEvent からフルパスしか取得できないため、一旦フルパスを渡している
   asrStore.start(filePath);
 
   let unlistenFns: UnlistenFn[] = [];
@@ -34,13 +36,18 @@ async function startProcessing(filePath: string): Promise<void> {
     cleanup();
   });
 
-  unlistenFns = [unlistenStarted, unlistenProgress, unlistenFinished];
+  const unlistenError = await asrRepository.onAsrError((errorMessage) => {
+    asrStore.setError(errorMessage);
+    cleanup();
+  });
+
+  unlistenFns = [unlistenStarted, unlistenProgress, unlistenFinished, unlistenError];
 
   try {
     await asrRepository.startAsrProcess(filePath);
   } catch (error) {
     console.error('Failed to start ASR process:', error);
-    asrStore.reset();
+    asrStore.setError('ASRプロセスの開始に失敗しました。');
     cleanup();
   }
 }

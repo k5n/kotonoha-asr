@@ -1,6 +1,6 @@
 import type { AsrProgressPayload } from '$lib/infrastructure/repositories/asrRepository';
 
-type Status = 'initial' | 'processing' | 'done';
+type Status = 'initial' | 'processing' | 'done' | 'error';
 
 let store = $state({
   status: 'initial' as Status,
@@ -8,6 +8,7 @@ let store = $state({
   fileName: '',
   totalDurationMs: 0,
   transcriptionSegments: [] as AsrProgressPayload[],
+  errorMessage: null as string | null,
 });
 
 export const asrStore = {
@@ -21,6 +22,7 @@ export const asrStore = {
     store.progress = 0;
     store.totalDurationMs = 0;
     store.transcriptionSegments = [];
+    store.errorMessage = null;
   },
 
   setTotalDuration(ms: number) {
@@ -40,11 +42,17 @@ export const asrStore = {
     store.progress = 100;
   },
 
+  setError(message: string) {
+    store.status = 'error';
+    store.errorMessage = message;
+  },
+
   reset() {
     store.status = 'initial';
     store.fileName = '';
     store.progress = 0;
     store.totalDurationMs = 0;
     store.transcriptionSegments = [];
+    store.errorMessage = null;
   },
 };

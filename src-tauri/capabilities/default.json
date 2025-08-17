@@ -46,7 +46,12 @@
     },
     {
       "identifier": "http:default",
-      "allow": [{ "url": "https://huggingface.co/*" }]
-    }
+      "allow": [
+        {
+          "url": "https://huggingface.co/*"
+        }
+      ]
+    },
+    "dialog:default"
   ]
 }

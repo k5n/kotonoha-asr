@@ -6,10 +6,9 @@
   import { asrUseCases } from '$lib/application/usecases/asrUseCases';
 
   // --- Event Handlers ---
-  function startProcessing(files: FileList) {
-    if (!files || files.length === 0) return;
-    // The file name is used as a filePath in this stub implementation.
-    asrUseCases.startProcessing(files[0].name);
+  function handleFileSelected(filePath: string) {
+    if (!filePath) return;
+    asrUseCases.startProcessing(filePath);
   }
 
   function handleSave() {
@@ -26,7 +25,7 @@
   </header>
 
   {#if asrStore.value.status === 'initial'}
-    <InitialView onFileSelected={startProcessing} />
+    <InitialView onFileSelected={handleFileSelected} />
   {:else}
     <ProcessingView
       fileName={asrStore.value.fileName}

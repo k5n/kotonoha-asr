@@ -28,3 +28,4 @@ sherpa-rs-sys = { git = "https://github.com/k5n/sherpa-rs" }
 sherpa-rs = { git = "https://github.com/k5n/sherpa-rs", branch = "timestamp-support-parakeet-tdt-0.6b-v2" }
 tauri-plugin-fs = "2"
 tauri-plugin-http = "2"
+tauri-plugin-dialog = "2"

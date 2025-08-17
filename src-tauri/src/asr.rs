@@ -293,7 +293,7 @@ pub fn start_asr_process(app_handle: AppHandle, file_path: String) {
         }
 
         let model_dir_path = match app_handle.path().resolve(
-            "sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8",
+            "models/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8",
             BaseDirectory::AppLocalData,
         ) {
             Ok(path) => path,

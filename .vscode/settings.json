@@ -45,6 +45,7 @@
     "flowbite",
     "kotonoha",
     "nsis",
+    "onnx",
     "serde",
     "tauri",
     "Unlisten",

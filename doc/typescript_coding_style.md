@@ -1,5 +1,21 @@
 # TypeScript コーディングスタイル
 
+## import パスの記述規約（SvelteKit `$lib`）
+
+- **`src/lib` 以下のファイルを import する場合は、必ず `$lib` を使った絶対パスで import してください。**
+  - 相対パス（例: `../../lib/xxx`）は使用禁止。
+  - `$lib` は SvelteKit の Vite エイリアスで、`src/lib` を指します。
+
+- **例:**
+
+  ```typescript
+  // OK
+  import { fetchEpisodes } from '$lib/application/usecases/fetchEpisodes';
+
+  // NG
+  import { fetchEpisodes } from '../../lib/application/usecases/fetchEpisodes';
+  ```
+
 ## 関数定義
 
 > 基本方針：

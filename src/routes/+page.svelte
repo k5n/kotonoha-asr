@@ -1,8 +1,10 @@
 <script lang="ts">
   import { asrStore } from '$lib/application/stores/asrStore.svelte';
   import { asrUseCases } from '$lib/application/usecases/asrUseCases';
+  import { saveTranscriptionFile } from '$lib/application/usecases/saveTranscriptionFile';
   import InitialView from '$lib/presentation/components/InitialView.svelte';
   import ProcessingView from '$lib/presentation/components/ProcessingView.svelte';
+  import { save } from '@tauri-apps/plugin-dialog';
   import { Alert, Button, Heading, P } from 'flowbite-svelte';
   import { ExclamationCircleOutline } from 'flowbite-svelte-icons';
 
@@ -12,8 +14,20 @@
     asrUseCases.startProcessing(filePath);
   }
 
-  function handleSave() {
-    // TODO: SRTファイルとして保存する処理を実装する
+  async function handleSave(transcription: string) {
+    const path = await save({
+      defaultPath: `${asrStore.fileName}.sswt`,
+      filters: [{ name: 'Simple Subtitle With Timestamp Files', extensions: ['sswt'] }],
+    });
+    if (path) {
+      try {
+        await saveTranscriptionFile(path, transcription);
+        asrStore.reset();
+      } catch (error) {
+        console.error('Failed to save transcription file:', error);
+        asrStore.setError('ファイル保存に失敗しました。');
+      }
+    }
   }
 
   function handleReset() {
@@ -25,7 +39,7 @@
   <header class="mb-10 text-center">
     <Heading tag="h1" class="mb-8">Kotonoha-ASR</Heading>
     <P class="text-center text-lg text-gray-600 dark:text-gray-400"
-      >音声ファイルから文字起こしを行います</P
+      >英語音声ファイルから文字起こしを行います</P
     >
   </header>
 

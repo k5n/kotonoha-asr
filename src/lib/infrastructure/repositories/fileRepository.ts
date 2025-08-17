@@ -1,3 +1,4 @@
+import { invoke } from '@tauri-apps/api/core';
 import { BaseDirectory, exists, mkdir, writeFile, writeTextFile } from '@tauri-apps/plugin-fs';
 import { trace } from '@tauri-apps/plugin-log';
 
@@ -27,5 +28,10 @@ export const fileRepository = {
     const filePath = `${MODEL_DIR_NAME}/${fileName}`;
     await writeTextFile(filePath, content, { baseDir: BaseDirectory.AppLocalData });
     trace(`Saved text file: ${filePath}`);
+  },
+
+  async saveTranscriptionFile(filePath: string, content: string): Promise<void> {
+    await invoke('save_transcription_file', { filepath: filePath, content });
+    trace(`Saved transcription file: ${filePath}`);
   },
 };

@@ -49,6 +49,7 @@
     "nsis",
     "onnx",
     "serde",
+    "sswt",
     "tauri",
     "Unlisten",
     "usecases"

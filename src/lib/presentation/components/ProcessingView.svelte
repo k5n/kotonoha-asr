@@ -21,7 +21,7 @@
     status: Status;
     totalDurationMs: number;
     processingTimeMs: number;
-    onSave: () => void;
+    onSave: (_transcription: string) => void;
     onReset: () => void;
   } = $props();
 
@@ -82,7 +82,11 @@
 
     <div class="flex justify-center gap-4">
       <Button color="light" disabled={status !== 'done'} onclick={onReset}>初期画面に戻る</Button>
-      <Button color="blue" disabled={status !== 'done'} onclick={onSave}>ファイルとして保存</Button>
+      <Button
+        color="blue"
+        disabled={status !== 'done'}
+        onclick={() => onSave(formattedTranscription)}>ファイルとして保存</Button
+      >
     </div>
   </div>
 </div>

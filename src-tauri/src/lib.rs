@@ -1,9 +1,12 @@
 mod asr;
 mod audio_converter;
+mod transcription;
 
-use asr::start_asr_process;
 use tauri;
 use tauri_plugin_log;
+
+use asr::start_asr_process;
+use transcription::save_transcription_file;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -28,7 +31,10 @@ pub fn run() {
                 .build()
         })
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![start_asr_process])
+        .invoke_handler(tauri::generate_handler![
+            start_asr_process,
+            save_transcription_file
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

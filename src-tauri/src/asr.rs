@@ -295,6 +295,9 @@ pub fn start_asr_process(app_handle: AppHandle, file_path: String) {
             }
         };
 
+        let cpus = num_cpus::get();
+        // NOTE: CPU数が多いからといってスレッド数を増やしすぎると逆にパフォーマンスが落ちる。
+        let num_threads = std::cmp::max(1, std::cmp::min(6, cpus / 2));
         let config = TransducerConfig {
             decoder: model_dir_path
                 .join("decoder.int8.onnx")
@@ -316,7 +319,7 @@ pub fn start_asr_process(app_handle: AppHandle, file_path: String) {
                 .to_str()
                 .unwrap()
                 .to_string(),
-            num_threads: 1,
+            num_threads: num_threads as i32,
             sample_rate: REQUIRED_SAMPLE_RATE as i32,
             feature_dim: FEATURE_DIM,
             debug: true,

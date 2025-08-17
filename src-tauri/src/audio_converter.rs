@@ -1,4 +1,5 @@
 // cSpell:words Sinc
+use log::info;
 use rubato::{
     Resampler, SincFixedIn, SincInterpolationParameters, SincInterpolationType, WindowFunction,
 };
@@ -13,6 +14,8 @@ use symphonia::core::units::Duration;
 use symphonia::default::{get_codecs, get_probe};
 
 pub fn convert_to_mono_f32_16khz(input_path: &str) -> Result<Vec<f32>, Box<dyn std::error::Error>> {
+    info!("Converting audio file: {}", input_path);
+
     // Create a media source.
     let src = std::fs::File::open(input_path)?;
     let mss = MediaSourceStream::new(Box::new(src), Default::default());
@@ -42,6 +45,12 @@ pub fn convert_to_mono_f32_16khz(input_path: &str) -> Result<Vec<f32>, Box<dyn s
         .sample_rate
         .ok_or("Sample rate unknown")?;
     let channels = track.codec_params.channels.ok_or("Channel info unknown")?;
+    info!(
+        "Found audio track: {} with sample rate: {} and channels: {}",
+        track.codec_params.codec,
+        sample_rate,
+        channels.count()
+    );
 
     // Create a decoder for the track.
     let mut decoder = get_codecs().make(&track.codec_params, &DecoderOptions::default())?;
@@ -87,9 +96,11 @@ pub fn convert_to_mono_f32_16khz(input_path: &str) -> Result<Vec<f32>, Box<dyn s
             }
         }
     }
+    info!("Decoded {} samples", samples_f32.len());
 
     // Resample if necessary.
     let samples_resampled = if sample_rate != 16000 {
+        info!("Resampling audio from {} Hz to 16000 Hz", sample_rate);
         let params = SincInterpolationParameters {
             sinc_len: 256,
             f_cutoff: 0.95,
@@ -106,6 +117,10 @@ pub fn convert_to_mono_f32_16khz(input_path: &str) -> Result<Vec<f32>, Box<dyn s
         )?;
         let chunks = vec![samples_f32];
         let resampled_chunks = resampler.process(&chunks, None)?;
+        info!(
+            "Resampling complete, new sample count: {}",
+            resampled_chunks[0].len()
+        );
         resampled_chunks[0].clone()
     } else {
         samples_f32

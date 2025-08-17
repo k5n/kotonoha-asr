@@ -29,5 +29,5 @@ sherpa-rs = { git = "https://github.com/k5n/sherpa-rs", branch = "timestamp-supp
 tauri-plugin-fs = "2"
 tauri-plugin-http = "2"
 tauri-plugin-dialog = "2"
-symphonia = { version = "0.5.4", features=["all"]}
+symphonia = { version = "0.5.4", features= ["all"] }
 rubato = "0.16.2"

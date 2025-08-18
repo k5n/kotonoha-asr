@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 This section contains upcoming changes planned for the next release.
 
+- Fixed: HE‑AAC audio files without a file extension can now be imported and processed without error.
+
 ## v0.1.0 - 2025-08-17
 
 - Initial public release

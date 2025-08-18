@@ -22,7 +22,12 @@ pub fn convert_to_mono_f32_16khz(input_path: &str) -> Result<Vec<f32>, Box<dyn s
 
     // Create a hint to help the format prober guess the format.
     let mut hint = Hint::new();
-    if let Some(ext) = input_path.split('.').last() {
+    // Only set extension hint when input path has a real extension. Avoid treating a filename
+    // without an extension (e.g. "EP01") as an extension value.
+    if let Some(ext) = std::path::Path::new(input_path)
+        .extension()
+        .and_then(|s| s.to_str())
+    {
         hint.with_extension(ext);
     }
 
@@ -44,13 +49,24 @@ pub fn convert_to_mono_f32_16khz(input_path: &str) -> Result<Vec<f32>, Box<dyn s
         .codec_params
         .sample_rate
         .ok_or("Sample rate unknown")?;
-    let channels = track.codec_params.channels.ok_or("Channel info unknown")?;
-    info!(
-        "Found audio track: {} with sample rate: {} and channels: {}",
-        track.codec_params.codec,
-        sample_rate,
-        channels.count()
-    );
+
+    // Don't fail immediately if channels is missing; try to detect from decoded frames as a
+    // fallback. Keep a mutable option we update after decoding the first frame.
+    let mut channels_opt = track.codec_params.channels;
+    if let Some(ch) = channels_opt {
+        info!(
+            "Found audio track: {} with sample rate: {} and channels: {}",
+            track.codec_params.codec,
+            sample_rate,
+            ch.count()
+        );
+    } else {
+        info!(
+            "Found audio track: {} with sample rate: {} but channel info is missing in codec params; will try to detect from decoded frames",
+            track.codec_params.codec,
+            sample_rate,
+        );
+    }
 
     // Create a decoder for the track.
     let mut decoder = get_codecs().make(&track.codec_params, &DecoderOptions::default())?;
@@ -78,6 +94,14 @@ pub fn convert_to_mono_f32_16khz(input_path: &str) -> Result<Vec<f32>, Box<dyn s
         // Decode the packet into audio samples.
         let audio_buf = decoder.decode(&packet)?;
 
+        // If channel info was missing in track codec params, obtain it from the decoded buffer.
+        if channels_opt.is_none() {
+            channels_opt = Some(audio_buf.spec().channels);
+            if let Some(ch) = channels_opt {
+                info!("Detected channels from decoded frame: {}", ch.count());
+            }
+        }
+
         // Copy the samples to a local buffer.
         let mut sample_buf =
             SampleBuffer::<f32>::new(audio_buf.capacity() as Duration, *audio_buf.spec());
@@ -87,12 +111,16 @@ pub fn convert_to_mono_f32_16khz(input_path: &str) -> Result<Vec<f32>, Box<dyn s
         let buffer = sample_buf.samples();
 
         // Convert to mono and append to the main buffer.
-        if channels.count() == 1 {
+        let channels_count = channels_opt
+            .ok_or("Channel info unknown after decoding")?
+            .count();
+
+        if channels_count == 1 {
             samples_f32.extend_from_slice(buffer);
         } else {
-            for frame in buffer.chunks(channels.count()) {
+            for frame in buffer.chunks(channels_count) {
                 let sum: f32 = frame.iter().sum();
-                samples_f32.push(sum / channels.count() as f32);
+                samples_f32.push(sum / channels_count as f32);
             }
         }
     }

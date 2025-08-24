@@ -30,7 +30,7 @@ jobs:
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils file
 
       - name: setup node
         uses: actions/setup-node@v4
@@ -51,13 +51,54 @@ jobs:
       - name: install frontend dependencies
         run: npm install
 
+      - name: extract top section from CHANGELOG.md
+        id: get_release_body
+        run: |
+          # If CHANGELOG.md exists, extract the top releasable section.
+          # Behavior:
+          # - If the first '## ' is an Unreleased section, skip it and use the next '## ' block.
+          # - Otherwise use the first '## ' block.
+          if [ -f CHANGELOG.md ]; then
+            # Try: skip leading Unreleased and capture the following version block
+            BODY=$(awk '
+              BEGIN{state=0}
+              /^##[[:space:]]/ {
+                if(state==0) {
+                  if($0 ~ /[Uu]nreleased/) { state=2; next }
+                  else { state=1; print; next }
+                } else if(state==2) {
+                  state=1; print; next
+                } else { exit }
+              }
+              if(state==1) print
+            ' CHANGELOG.md)
+
+            # If nothing captured (e.g. file has only Unreleased or different format), fall back to capturing the very first '## ' block
+            if [ -z "$BODY" ]; then
+              BODY=$(awk 'BEGIN{found=0} /^##[[:space:]]/ { if(found==0){found=1; print; next} else {exit} } found{print}' CHANGELOG.md)
+            fi
+
+            # Final fallback to whole file if still empty
+            [ -z "$BODY" ] && BODY=$(cat CHANGELOG.md)
+          else
+            BODY="CHANGELOG.md not found in repository."
+          fi
+
+          # Trim leading/trailing blank lines
+          BODY="$(printf '%s\n' "$BODY" | sed '/^[[:space:]]*$/d')"
+
+          # Write multi-line output to GITHUB_OUTPUT
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          printf '%s\n' "$BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
-          releaseBody: 'See the assets to download this version and install.'
-          releaseDraft: false
+          releaseBody: ${{ steps.get_release_body.outputs.body }}
+          releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}

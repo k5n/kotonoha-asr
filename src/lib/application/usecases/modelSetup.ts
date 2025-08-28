@@ -27,26 +27,29 @@ export async function ensureModelIsReady(onProgress: (progress: number) => void)
       return;
     }
     trace('Some model files are missing. Starting download...');
-    onProgress(0);
 
-    let downloadedCount = 0;
+    let completedFiles = 0;
     const totalFiles = FILES_TO_DOWNLOAD.length;
 
-    await Promise.all(
-      FILES_TO_DOWNLOAD.map(async (file) => {
+    for (const file of FILES_TO_DOWNLOAD) {
+      if (file.isBinary) {
+        // 大きなバイナリファイルはストリーミングダウンロード
+        await modelDownloadRepository.downloadFileStream(file.name, (fileProgress) => {
+          const totalProgress = Math.round(
+            ((completedFiles + fileProgress / 100) / totalFiles) * 100
+          );
+          onProgress(totalProgress);
+        });
+      } else {
+        // 小さなテキストファイルは従来通り
         const content = await modelDownloadRepository.downloadFile(file.name);
+        const textContent = new TextDecoder().decode(content);
+        await fileRepository.saveModelTextFile(file.name, textContent);
+      }
 
-        if (file.isBinary) {
-          await fileRepository.saveModelFile(file.name, content);
-        } else {
-          const textContent = new TextDecoder().decode(content);
-          await fileRepository.saveModelTextFile(file.name, textContent);
-        }
-
-        downloadedCount++;
-        onProgress(Math.round((downloadedCount / totalFiles) * 100));
-      })
-    );
+      completedFiles++;
+      onProgress(Math.round((completedFiles / totalFiles) * 100));
+    }
 
     trace('Model download completed.');
   } catch (e) {

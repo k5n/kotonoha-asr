@@ -1,3 +1,5 @@
+import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import { fetch } from '@tauri-apps/plugin-http';
 import { trace } from '@tauri-apps/plugin-log';
 
@@ -19,5 +21,37 @@ export const modelDownloadRepository = {
 
     const content = await response.arrayBuffer();
     return new Uint8Array(content);
+  },
+
+  async downloadFileStream(
+    fileName: string,
+    onProgress?: (progress: number) => void
+  ): Promise<void> {
+    const url = `${MODEL_BASE_URL}/${fileName}`;
+    const filePath = `models/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8/${fileName}`;
+
+    trace(`Streaming download ${url} to ${filePath}`);
+
+    // 進捗イベントリスナーを設定
+    let unlisten: (() => void) | null = null;
+    if (onProgress) {
+      unlisten = await listen('download_progress', (event: any) => {
+        const payload = event.payload;
+        if (payload.fileName === fileName) {
+          onProgress(payload.progress);
+        }
+      });
+    }
+
+    try {
+      await invoke('download_model_file_stream', {
+        url,
+        filePath,
+      });
+    } finally {
+      if (unlisten) {
+        unlisten();
+      }
+    }
   },
 };

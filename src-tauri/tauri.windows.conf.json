@@ -1,0 +1,9 @@
+{
+  "identifier": "com.k5-n.kotonoha.asr",
+  "bundle": {
+    "resources": {
+      "target/release/sherpa-onnx-c-api.dll": "./",
+      "target/release/onnxruntime.dll": "./"
+    }
+  }
+}

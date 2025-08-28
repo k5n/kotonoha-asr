@@ -1,4 +1,4 @@
-# cSpell:ignore libwebkit libappindicator librsvg patchelf libclang dtolnay swatinem nreleased
+# cSpell:ignore libwebkit libappindicator librsvg patchelf libclang dtolnay swatinem nreleased RUSTFLAGS rpath
 name: 'publish'
 
 on:

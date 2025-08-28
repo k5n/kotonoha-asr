@@ -2268,7 +2268,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sherpa-rs",
- "sherpa-rs-sys",
  "symphonia",
  "tauri",
  "tauri-build",

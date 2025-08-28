@@ -48,6 +48,8 @@
     "nemo",
     "nsis",
     "onnx",
+    "onnxruntime",
+    "reqwest",
     "serde",
     "sswt",
     "tauri",

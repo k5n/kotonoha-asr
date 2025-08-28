@@ -101,11 +101,15 @@ jobs:
           printf '%s\n' "$BODY" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: Set Ubuntu-specific environment variables
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          echo "LD_LIBRARY_PATH=/home/runner/work/kotonoha-asr/kotonoha-asr/src-tauri/target/release" >> $GITHUB_ENV
+          echo "RUSTFLAGS=-Clink-arg=-Wl,-rpath,\$ORIGIN" >> $GITHUB_ENV
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          LD_LIBRARY_PATH: ${{ matrix.platform == 'ubuntu-22.04' && './src-tauri/target/release' || '' }}
-          RUSTFLAGS: ${{ matrix.platform == 'ubuntu-22.04' && '-Clink-arg=-Wl,-rpath,$ORIGIN' || '' }}
         with:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'

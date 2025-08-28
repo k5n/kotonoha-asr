@@ -1,4 +1,4 @@
-# cSpell:ignore libwebkit libappindicator librsvg patchelf libclang dtolnay swatinem
+# cSpell:ignore libwebkit libappindicator librsvg patchelf libclang dtolnay swatinem nreleased
 name: 'publish'
 
 on:
@@ -77,12 +77,12 @@ jobs:
                   state=1; print; next
                 } else { exit }
               }
-              if(state==1) print
+              state==1 { print }
             ' CHANGELOG.md)
 
             # If nothing captured (e.g. file has only Unreleased or different format), fall back to capturing the very first '## ' block
             if [ -z "$BODY" ]; then
-              BODY=$(awk 'BEGIN{found=0} /^##[[:space:]]/ { if(found==0){found=1; print; next} else {exit} } found{print}' CHANGELOG.md)
+              BODY=$(awk 'BEGIN{found=0} /^##[[:space:]]/ { if(found==0){found=1; print; next} else {exit} } found==1 { print }' CHANGELOG.md)
             fi
 
             # Final fallback to whole file if still empty

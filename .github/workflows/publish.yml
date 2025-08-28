@@ -1,4 +1,4 @@
-# cSpell:ignore libwebkit libappindicator librsvg patchelf dtolnay swatinem
+# cSpell:ignore libwebkit libappindicator librsvg patchelf libclang dtolnay swatinem nreleased RUSTFLAGS rpath
 name: 'publish'
 
 on:
@@ -18,7 +18,7 @@ jobs:
           - platform: 'macos-latest' # for Arm based macs (M1 and above).
             args: '--target universal-apple-darwin'
           - platform: 'ubuntu-22.04'
-            args: ''
+            args: '--verbose'
           - platform: 'windows-latest'
             args: ''
 
@@ -30,7 +30,14 @@ jobs:
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils file
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            xdg-utils \
+            file \
+            libclang-dev
 
       - name: setup node
         uses: actions/setup-node@v4
@@ -53,6 +60,8 @@ jobs:
 
       - name: extract top section from CHANGELOG.md
         id: get_release_body
+        if: matrix.platform == 'ubuntu-22.04'
+        shell: bash
         run: |
           # If CHANGELOG.md exists, extract the top releasable section.
           # Behavior:
@@ -70,12 +79,12 @@ jobs:
                   state=1; print; next
                 } else { exit }
               }
-              if(state==1) print
+              state==1 { print }
             ' CHANGELOG.md)
 
             # If nothing captured (e.g. file has only Unreleased or different format), fall back to capturing the very first '## ' block
             if [ -z "$BODY" ]; then
-              BODY=$(awk 'BEGIN{found=0} /^##[[:space:]]/ { if(found==0){found=1; print; next} else {exit} } found{print}' CHANGELOG.md)
+              BODY=$(awk 'BEGIN{found=0} /^##[[:space:]]/ { if(found==0){found=1; print; next} else {exit} } found==1 { print }' CHANGELOG.md)
             fi
 
             # Final fallback to whole file if still empty
@@ -92,13 +101,19 @@ jobs:
           printf '%s\n' "$BODY" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: Set Ubuntu-specific environment variables
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          echo "LD_LIBRARY_PATH=/home/runner/work/kotonoha-asr/kotonoha-asr/src-tauri/target/release" >> $GITHUB_ENV
+          echo "RUSTFLAGS=-Clink-arg=-Wl,-rpath,\$ORIGIN" >> $GITHUB_ENV
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
-          releaseBody: ${{ steps.get_release_body.outputs.body }}
+          releaseBody: ${{ matrix.platform == 'ubuntu-22.04' && steps.get_release_body.outputs.body || '' }}
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}

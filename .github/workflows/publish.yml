@@ -18,7 +18,7 @@ jobs:
           - platform: 'macos-latest' # for Arm based macs (M1 and above).
             args: '--target universal-apple-darwin'
           - platform: 'ubuntu-22.04'
-            args: ''
+            args: '--verbose'
           - platform: 'windows-latest'
             args: ''
 

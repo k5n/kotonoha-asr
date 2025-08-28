@@ -24,11 +24,11 @@ serde_json = "1"
 tauri-plugin-log = "2"
 log = "0.4"
 tauri-plugin-store = "2"
-sherpa-rs-sys = { git = "https://github.com/k5n/sherpa-rs" }
+sherpa-rs-sys = { git = "https://github.com/k5n/sherpa-rs", branch = "timestamp-support-parakeet-tdt-0.6b-v2" }
 sherpa-rs = { git = "https://github.com/k5n/sherpa-rs", branch = "timestamp-support-parakeet-tdt-0.6b-v2" }
 tauri-plugin-fs = "2"
 tauri-plugin-http = "2"
 tauri-plugin-dialog = "2"
-symphonia = { version = "0.5.4", features= ["all"] }
+symphonia = { version = "0.5.4", features = ["all"] }
 rubato = "0.16.2"
 num_cpus = "1.17.0"

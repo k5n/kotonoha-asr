@@ -1,4 +1,4 @@
-# cSpell:ignore libwebkit libappindicator librsvg patchelf dtolnay swatinem
+# cSpell:ignore libwebkit libappindicator librsvg patchelf libclang dtolnay swatinem
 name: 'publish'
 
 on:
@@ -30,7 +30,14 @@ jobs:
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils file
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            xdg-utils \
+            file \
+            libclang-dev
 
       - name: setup node
         uses: actions/setup-node@v4
@@ -95,6 +102,8 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LD_LIBRARY_PATH: ${{ matrix.platform == 'ubuntu-22.04' && './src-tauri/target/release' || '' }}
+          RUSTFLAGS: ${{ matrix.platform == 'ubuntu-22.04' && '-Clink-arg=-Wl,-rpath,$ORIGIN' || '' }}
         with:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'

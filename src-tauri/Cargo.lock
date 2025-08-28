@@ -2268,7 +2268,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sherpa-rs",
- "sherpa-rs-sys 0.6.6 (git+https://github.com/k5n/sherpa-rs)",
+ "sherpa-rs-sys",
  "symphonia",
  "tauri",
  "tauri-build",
@@ -4184,7 +4184,7 @@ source = "git+https://github.com/k5n/sherpa-rs?branch=timestamp-support-parakeet
 dependencies = [
  "eyre",
  "hound",
- "sherpa-rs-sys 0.6.6 (git+https://github.com/k5n/sherpa-rs?branch=timestamp-support-parakeet-tdt-0.6b-v2)",
+ "sherpa-rs-sys",
  "tracing",
 ]
 
@@ -4192,25 +4192,6 @@ dependencies = [
 name = "sherpa-rs-sys"
 version = "0.6.6"
 source = "git+https://github.com/k5n/sherpa-rs?branch=timestamp-support-parakeet-tdt-0.6b-v2#3b2da2d6853d3de6679a0c7b8e8de0b644ba166b"
-dependencies = [
- "bindgen",
- "bzip2",
- "cmake",
- "dirs 5.0.1",
- "flate2",
- "glob",
- "lazy_static",
- "serde",
- "serde_json",
- "sha2",
- "tar",
- "ureq",
-]
-
-[[package]]
-name = "sherpa-rs-sys"
-version = "0.6.6"
-source = "git+https://github.com/k5n/sherpa-rs#1f44a04f10ec8ef99a141411b49d5981d2893810"
 dependencies = [
  "bindgen",
  "bzip2",

@@ -60,6 +60,8 @@ jobs:
 
       - name: extract top section from CHANGELOG.md
         id: get_release_body
+        if: matrix.platform == 'ubuntu-22.04'
+        shell: bash
         run: |
           # If CHANGELOG.md exists, extract the top releasable section.
           # Behavior:
@@ -107,7 +109,7 @@ jobs:
         with:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
-          releaseBody: ${{ steps.get_release_body.outputs.body }}
+          releaseBody: ${{ matrix.platform == 'ubuntu-22.04' && steps.get_release_body.outputs.body || '' }}
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}

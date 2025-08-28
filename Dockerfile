@@ -21,7 +21,9 @@ RUN apt-get update && \
     git \
     xdg-utils \
     file \
-    libclang-dev
+    libclang-dev \
+    libssl-dev \
+    pkg-config
 
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
     apt-get install -y nodejs

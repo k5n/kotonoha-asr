@@ -1,4 +1,4 @@
-# cSpell:ignore libwebkit libappindicator librsvg patchelf libclang dtolnay swatinem nreleased RUSTFLAGS rpath
+# cSpell:ignore libwebkit libappindicator librsvg patchelf libclang dtolnay swatinem nreleased RUSTFLAGS rpath esac
 name: 'publish'
 
 on:
@@ -16,11 +16,11 @@ jobs:
       matrix:
         include:
           - platform: 'macos-latest' # for Arm based macs (M1 and above).
-            args: '--target universal-apple-darwin'
+            args: '--target universal-apple-darwin --verbose'
           - platform: 'ubuntu-22.04'
             args: '--verbose'
           - platform: 'windows-latest'
-            args: ''
+            args: '--verbose'
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -37,7 +37,9 @@ jobs:
             patchelf \
             xdg-utils \
             file \
-            libclang-dev
+            libclang-dev \
+            libssl-dev \
+            pkg-config
 
       - name: setup node
         uses: actions/setup-node@v4
@@ -55,51 +57,37 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
-      - name: install frontend dependencies
-        run: npm install
-
-      - name: extract top section from CHANGELOG.md
-        id: get_release_body
-        if: matrix.platform == 'ubuntu-22.04'
+      # sherpa-rs がダウンロードを行うが、ビルド前に存在しないと macOS のビルドに失敗する。
+      # また他のプラットフォームでもビルド前に存在していた方が GitHub Actions でのビルドが安定する。
+      - name: Download and extract sherpa-onnx library
         shell: bash
         run: |
-          # If CHANGELOG.md exists, extract the top releasable section.
-          # Behavior:
-          # - If the first '## ' is an Unreleased section, skip it and use the next '## ' block.
-          # - Otherwise use the first '## ' block.
-          if [ -f CHANGELOG.md ]; then
-            # Try: skip leading Unreleased and capture the following version block
-            BODY=$(awk '
-              BEGIN{state=0}
-              /^##[[:space:]]/ {
-                if(state==0) {
-                  if($0 ~ /[Uu]nreleased/) { state=2; next }
-                  else { state=1; print; next }
-                } else if(state==2) {
-                  state=1; print; next
-                } else { exit }
-              }
-              state==1 { print }
-            ' CHANGELOG.md)
+          case "${{ matrix.platform }}" in
+            "macos-latest")
+              PACKAGE="sherpa-onnx-v1.11.5-osx-universal2-shared"
+              URL="https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.11.5/$PACKAGE.tar.bz2"
+              ;;
+            "ubuntu-22.04")
+              PACKAGE="sherpa-onnx-v1.11.5-linux-x64-shared"
+              URL="https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.11.5/$PACKAGE.tar.bz2"
+              ;;
+            "windows-latest")
+              PACKAGE="sherpa-onnx-v1.11.5-win-x64-shared"
+              URL="https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.11.5/$PACKAGE.tar.bz2"
+              ;;
+          esac
 
-            # If nothing captured (e.g. file has only Unreleased or different format), fall back to capturing the very first '## ' block
-            if [ -z "$BODY" ]; then
-              BODY=$(awk 'BEGIN{found=0} /^##[[:space:]]/ { if(found==0){found=1; print; next} else {exit} } found==1 { print }' CHANGELOG.md)
-            fi
+          echo "Downloading from: $URL"
+          curl -L "$URL" -o "$PACKAGE.tar.bz2"
+          tar -xjf "$PACKAGE.tar.bz2"
+          rm "$PACKAGE.tar.bz2"
+          mkdir -p src-tauri/target/release
+          find "$PACKAGE/lib" -type f -exec cp {} src-tauri/target/release/ \;
+          rm -rf $PACKAGE
+          ls -la
 
-            # Final fallback to whole file if still empty
-            [ -z "$BODY" ] && BODY=$(cat CHANGELOG.md)
-          else
-            BODY="CHANGELOG.md not found in repository."
-          fi
-
-          # Trim leading/trailing blank lines
-          BODY="$(printf '%s\n' "$BODY" | sed '/^[[:space:]]*$/d')"
-
-          # Write multi-line output to GITHUB_OUTPUT
-          echo "body<<EOF" >> $GITHUB_OUTPUT
-          printf '%s\n' "$BODY" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+      - name: install frontend dependencies
+        run: npm install
 
       - name: Set Ubuntu-specific environment variables
         if: matrix.platform == 'ubuntu-22.04'
@@ -110,10 +98,16 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHERPA_BUILD_SHARED_LIBS: 1
+          SHERPA_BUILD_DEBUG: 1
         with:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
-          releaseBody: ${{ matrix.platform == 'ubuntu-22.04' && steps.get_release_body.outputs.body || '' }}
+          releaseBody: |
+            See the assets to download this version and install.
+            - Linux: *_amd64.AppImage
+            - Windows: *_x64-setup.exe
+            - macOS: *_universal.app.tar.gz
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}

@@ -46,6 +46,12 @@
         "languages": ["English", "Japanese"],
         "displayLanguageSelector": true
       }
+    },
+    "macOS": {
+      "frameworks": [
+        "target/release/libsherpa-onnx-c-api.dylib",
+        "target/release/libonnxruntime.1.17.1.dylib"
+      ]
     }
   },
   "plugins": {

@@ -53,10 +53,5 @@
         "target/release/libonnxruntime.1.17.1.dylib"
       ]
     }
-  },
-  "plugins": {
-    "sql": {
-      "preload": ["sqlite:app.db", "sqlite:dev.db"]
-    }
   }
 }

@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 This section contains upcoming changes planned for the next release.
 
+## v0.1.0 - 2025-08-29
+
+- fix: Handling some abbreviations (like Mr.) correctly
+- fix: Remove redundant white spaces at the beginning of sentences
+
 ## v0.1.0 - 2025-08-28
 
 - Initial public release

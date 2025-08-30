@@ -1,6 +1,6 @@
 {
   "name": "kotonoha-asr",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Kotonoha-ASR transcribes audio files into timestamped sentences using Automatic Speech Recognition (ASR) models.",
   "author": "Keigo Nakatani <k5n@users.noreply.github.com> (https://github.com/k5n)",
   "license": "GPL-3.0-only",
